@@ -2,11 +2,11 @@
 ml-observability-demo.py — ML Pipeline with OpenTelemetry tracing
 
 Demonstrates observability best practices for academic AI/ML workflows:
-- Each pipeline stage is instrumented with spans
-- Performance metrics are captured as span attributes
-- Full pipeline visibility for reproducibility and debugging
+- Each pipeline stage is instrumented with spans.
+- Performance metrics are captured as span attributes.
+- Full pipeline visibility supports reproducibility, transparency, and debugging.
 
-For use with Jaeger and Positron/Python environments.
+Designed for use with Jaeger (via Docker) and Positron/Python environments.
 """
 
 from opentelemetry import trace
@@ -23,9 +23,12 @@ from sklearn.metrics import mean_squared_error
 import time
 
 # ---------------------------------------------------------------------
-# Configure OpenTelemetry tracer
+# 1. Configure OpenTelemetry tracer
 # ---------------------------------------------------------------------
-print("🔧 Setting up OpenTelemetry for ML pipeline...\n")
+# The tracer configuration ensures that each run can be uniquely identified
+# by service metadata (namespace, version, environment). This information
+# supports reproducibility and auditability in research settings.
+print("Setting up OpenTelemetry for ML pipeline...\n")
 
 resource = Resource.create({
     "service.name": "ml-observability-demo",
@@ -36,12 +39,13 @@ resource = Resource.create({
 
 provider = TracerProvider(resource=resource)
 
-# Console exporter - shows traces in terminal for verification
+# Console exporter prints spans locally for quick verification of the pipeline.
 console_exporter = ConsoleSpanExporter()
 console_processor = BatchSpanProcessor(console_exporter)
 provider.add_span_processor(console_processor)
 
-# OTLP exporter - sends traces to Jaeger
+# OTLP exporter transmits trace data to Jaeger for persistent visualization.
+# Port 4318 must be open on the Docker container running Jaeger.
 otlp_exporter = OTLPSpanExporter(
     endpoint="http://localhost:4318/v1/traces",
     timeout=10
@@ -49,24 +53,30 @@ otlp_exporter = OTLPSpanExporter(
 otlp_processor = BatchSpanProcessor(otlp_exporter)
 provider.add_span_processor(otlp_processor)
 
+# Register the provider globally so all subsequent tracer calls use it.
 trace.set_tracer_provider(provider)
 tracer = trace.get_tracer("ml-observability-demo")
 
-print("✅ Tracer configured successfully")
-print("📊 Starting instrumented ML pipeline...\n")
+print("Tracer configured successfully.")
+print("Starting instrumented ML pipeline...\n")
 
 # ---------------------------------------------------------------------
-# Instrumented ML Pipeline
+# 2. Instrumented ML Pipeline
 # ---------------------------------------------------------------------
+# Each block below represents a discrete stage in a typical ML workflow.
+# Timing, data size, and model metrics are logged as span attributes
+# to support comparison across runs or different environments.
 try:
     with tracer.start_as_current_span("ml_pipeline") as pipeline_span:
-        # Add pipeline metadata
+        # Record overall pipeline metadata
         pipeline_span.set_attribute("pipeline.type", "supervised_learning")
         pipeline_span.set_attribute("pipeline.model", "linear_regression")
         
+        # -----------------------------
         # Stage 1: Data Loading
+        # -----------------------------
         with tracer.start_as_current_span("data_loading") as load_span:
-            print("1️⃣  Loading synthetic dataset...")
+            print("Loading synthetic dataset...")
             start_time = time.time()
             
             np.random.seed(42)
@@ -78,11 +88,13 @@ try:
             load_span.set_attribute("data.rows", len(dataset))
             load_span.set_attribute("data.columns", len(dataset.columns))
             load_span.set_attribute("duration_ms", round(load_time * 1000, 2))
-            print(f"   ✓ Loaded {len(dataset)} rows in {load_time:.3f}s\n")
+            print(f"   Loaded {len(dataset)} rows in {load_time:.3f}s\n")
 
+        # -----------------------------
         # Stage 2: Data Preprocessing
+        # -----------------------------
         with tracer.start_as_current_span("data_preprocessing") as prep_span:
-            print("2️⃣  Preprocessing data...")
+            print("Preprocessing data...")
             start_time = time.time()
             
             X = dataset[["x1", "x2", "x3"]]
@@ -96,11 +108,13 @@ try:
             prep_span.set_attribute("test.size", len(X_test))
             prep_span.set_attribute("test.ratio", 0.2)
             prep_span.set_attribute("duration_ms", round(prep_time * 1000, 2))
-            print(f"   ✓ Split: {len(X_train)} train, {len(X_test)} test\n")
+            print(f"   Split: {len(X_train)} train, {len(X_test)} test\n")
 
+        # -----------------------------
         # Stage 3: Model Training
+        # -----------------------------
         with tracer.start_as_current_span("model_training") as train_span:
-            print("3️⃣  Training linear regression model...")
+            print("Training linear regression model...")
             start_time = time.time()
             
             model = LinearRegression()
@@ -110,11 +124,13 @@ try:
             train_span.set_attribute("model.type", "LinearRegression")
             train_span.set_attribute("model.features", X_train.shape[1])
             train_span.set_attribute("duration_ms", round(train_time * 1000, 2))
-            print(f"   ✓ Model trained in {train_time:.3f}s\n")
+            print(f"   Model trained in {train_time:.3f}s\n")
 
+        # -----------------------------
         # Stage 4: Model Evaluation
+        # -----------------------------
         with tracer.start_as_current_span("model_evaluation") as eval_span:
-            print("4️⃣  Evaluating model performance...")
+            print("Evaluating model performance...")
             start_time = time.time()
             
             predictions = model.predict(X_test)
@@ -126,16 +142,18 @@ try:
             eval_span.set_attribute("metrics.rmse", round(rmse, 6))
             eval_span.set_attribute("duration_ms", round(eval_time * 1000, 2))
             
-            # Also add metrics to parent pipeline span
+            # Attach evaluation metrics to the parent pipeline span for summary comparison.
             pipeline_span.set_attribute("pipeline.mse", round(mse, 6))
             pipeline_span.set_attribute("pipeline.rmse", round(rmse, 6))
             
-            print(f"   ✓ Mean Squared Error: {mse:.6f}")
-            print(f"   ✓ Root Mean Squared Error: {rmse:.6f}\n")
+            print(f"   Mean Squared Error: {mse:.6f}")
+            print(f"   Root Mean Squared Error: {rmse:.6f}\n")
 
+        # -----------------------------
         # Stage 5: Results Export
+        # -----------------------------
         with tracer.start_as_current_span("export_results") as export_span:
-            print("5️⃣  Exporting results...")
+            print("Exporting results...")
             start_time = time.time()
             
             results = {
@@ -150,42 +168,49 @@ try:
             export_time = time.time() - start_time
             export_span.set_attribute("export.format", "dict")
             export_span.set_attribute("duration_ms", round(export_time * 1000, 2))
-            print(f"   ✓ Results: {results}\n")
+            print(f"   Results exported: {results}\n")
 
     print("=" * 70)
-    print("✅ ML PIPELINE COMPLETED SUCCESSFULLY")
+    print("ML PIPELINE COMPLETED SUCCESSFULLY")
     print("=" * 70)
 
+# ---------------------------------------------------------------------
+# 3. Error Handling and Resource Cleanup
+# ---------------------------------------------------------------------
+# Exceptions are logged to ensure the trace reflects any failures.
 except Exception as e:
-    print(f"\n❌ Error during pipeline execution: {e}")
+    print(f"\nError during pipeline execution: {e}")
     import traceback
     traceback.print_exc()
 
 finally:
-    # CRITICAL: Flush all spans to Jaeger before script ends
-    print("\n🔄 Flushing traces to Jaeger...")
+    # Flushing all spans ensures reproducibility: all performance metrics and
+    # metadata are transmitted to Jaeger before process termination.
+    print("\nFlushing traces to Jaeger...")
     try:
         console_processor.force_flush(timeout_millis=10000)
         otlp_processor.force_flush(timeout_millis=10000)
-        print("✅ All traces flushed successfully")
+        print("All traces flushed successfully.")
     except Exception as e:
-        print(f"⚠️  Warning during flush: {e}")
+        print(f"Warning during flush: {e}")
     
-    # Shutdown processors
+    # Shut down exporters cleanly for reproducible runs.
     try:
         console_processor.shutdown()
         otlp_processor.shutdown()
-        print("✅ Processors shut down cleanly\n")
+        print("Processors shut down cleanly.\n")
     except Exception as e:
-        print(f"⚠️  Warning during shutdown: {e}\n")
+        print(f"Warning during shutdown: {e}\n")
     
-    # Instructions
+    # -----------------------------------------------------------------
+    # 4. User Instructions for Reproducibility
+    # -----------------------------------------------------------------
     print("=" * 70)
-    print("📊 VIEW TRACES IN JAEGER:")
+    print("VIEW TRACES IN JAEGER:")
     print("  1. Open: http://localhost:16686")
     print("  2. Service dropdown: select 'ml-observability-demo'")
-    print("  3. Click 'Find Traces' button")
-    print("  4. Explore the pipeline stages and performance metrics")
+    print("  3. Click 'Find Traces' to explore the pipeline stages")
+    print("  4. Each span displays recorded durations and metrics.")
     print("=" * 70)
-    print("\n💡 TIP: Restart Positron's Python console between runs")
-    print("   to avoid TracerProvider conflicts.\n")
+    print("\nNote: Restart Positron's Python console between runs")
+    print("      to avoid 'TracerProvider already exists' warnings.\n")
