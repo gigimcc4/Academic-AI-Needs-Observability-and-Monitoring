@@ -257,7 +257,17 @@ netstat -ano | findstr :4318
 
 ### ML Pipeline Instrumentation
 
-The `ml-observability-demo.py` instruments 5 stages: 1. **Data Loading** - Track dataset size and load time 2. **Preprocessing** - Record train/test split ratios 3. **Training** - Capture model type and training duration 4. **Evaluation** - Store performance metrics (MSE, RMSE) 5. **Export** - Log result output timing
+The `ml-observability-demo.py` instruments 5 stages:
+
+1.  **Data Loading** - Track dataset size and load time
+
+2.  **Preprocessing** - Record train/test split ratios
+
+3.  **Training** - Capture model type and training duration
+
+4.  **Evaluation** - Store performance metrics (MSE, RMSE)
+
+5.  **Export** - Log result output timing
 
 Each stage creates a span with relevant attributes for full pipeline observability.
 
@@ -282,7 +292,11 @@ Each stage creates a span with relevant attributes for full pipeline observabili
 
 This is a demo repository for educational purposes.
 
-Feel free to: - Fork and modify for your own talks - Add additional ML pipeline examples - Integrate with your research workflows
+Feel free to: - Fork and modify for your own talks
+
+-   Add additional ML pipeline examples
+
+-   Integrate with your research workflows
 
 ## License
 
@@ -290,7 +304,11 @@ MIT License - Free to use for academic and research purposes.
 
 ## Contact
 
-For questions about implementing observability in your research: - Open an issue on GitHub - Email: \[jmmcclu3\@ncsu.edu\]
+For questions about implementing observability in your research:
+
+-   Open an issue on GitHub
+
+-   Email: \[jmmcclu3\@ncsu.edu\]
 
 ------------------------------------------------------------------------
 
