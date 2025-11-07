@@ -4,71 +4,68 @@
 
 This repository demonstrates how to integrate OpenTelemetry and Jaeger tracing into academic AI/ML research workflows for improved reproducibility, transparency, and debugging.
 
-##  Overview
+## Overview
 
-Modern AI/ML research requires:
-- **Reproducibility**: Track every step of your pipeline
-- **Performance monitoring**: Identify bottlenecks in data processing and training
-- **Debugging**: Understand pipeline failures with detailed traces
-- **Collaboration**: Share observable workflows with colleagues
+Modern AI/ML research requires: - **Reproducibility**: Track every step of your pipeline - **Performance monitoring**: Identify bottlenecks in data processing and training - **Debugging**: Understand pipeline failures with detailed traces - **Collaboration**: Share observable workflows with colleagues
 
 This demo shows how to instrument Python ML pipelines with OpenTelemetry and visualize traces in Jaeger.
 
-##  Demo Scripts
+## Demo Scripts
 
-1. **`main.py`** - Simple "Hello World" tracing demo
-2. **`ml-observability-demo.py`** - Complete ML pipeline with instrumentation
+1.  **`main.py`** - Simple "Hello World" tracing demo
+2.  **`ml-observability-demo.py`** - Complete ML pipeline with instrumentation
 
 ## Prerequisites
 
-- **Windows 10/11** (Mac/Linux also supported)
-- **Docker Desktop** (for running Jaeger)
-- **Python 3.9+** (tested with Python 3.12)
-- **Positron** or any Python IDE/editor
-- **PowerShell** or terminal access
+-   **Windows 10/11** (Mac/Linux also supported)
+-   **Docker Desktop** (for running Jaeger)
+-   **Python 3.9+** (tested with Python 3.12)
+-   **Positron** or any Python IDE/editor
+-   **PowerShell** or terminal access
 
 ## Installation & Setup
 
 ### Step 1: Install Docker Desktop
 
-1. Download Docker Desktop: https://www.docker.com/products/docker-desktop/
-2. Install and launch Docker Desktop
-3. Wait for Docker to start (whale icon in system tray should be steady)
+1.  Download Docker Desktop: https://www.docker.com/products/docker-desktop/
+2.  Install and launch Docker Desktop
+3.  Wait for Docker to start (whale icon in system tray should be steady)
 
 ### Step 2: Start Jaeger with Docker
 
 Open PowerShell and run:
 
-```powershell
+``` powershell
 docker run -d --name jaeger `
   -p 16686:16686 `
   -p 4318:4318 `
   jaegertracing/all-in-one:latest
 ```
 
-**Verify Jaeger is running:**
-- Open browser: http://localhost:16686
-- You should see the Jaeger UI
+**Verify Jaeger is running:** - Open browser: http://localhost:16686 - You should see the Jaeger UI
 
 **To stop Jaeger later:**
-```powershell
+
+``` powershell
 docker stop jaeger
 ```
 
 **To restart Jaeger:**
-```powershell
+
+``` powershell
 docker start jaeger
 ```
 
 **To remove Jaeger container:**
-```powershell
+
+``` powershell
 docker stop jaeger
 docker rm jaeger
 ```
 
 ### Step 3: Clone or Download This Repository
 
-```powershell
+``` powershell
 cd ~\Documents
 git clone https://github.com/YOUR_USERNAME/Academic-AI-Needs-Observability-and-Monitoring.git
 cd Academic-AI-Needs-Observability-and-Monitoring
@@ -80,7 +77,7 @@ Or download the ZIP file and extract it.
 
 **In PowerShell:**
 
-```powershell
+``` powershell
 # Navigate to the project directory
 cd C:\Users\YOUR_USERNAME\Academic-AI-Needs-Observability-and-Monitoring
 
@@ -92,27 +89,25 @@ python -m venv venv
 ```
 
 **Note:** If you get a PowerShell execution policy error, run:
-```powershell
+
+``` powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-**In Positron/VS Code:**
-- Open the project folder
-- Positron should auto-detect the `venv` folder
-- Select the Python interpreter from `venv\Scripts\python.exe`
+**In Positron/VS Code:** - Open the project folder - Positron should auto-detect the `venv` folder - Select the Python interpreter from `venv\Scripts\python.exe`
 
 ### Step 5: Install Required Packages
 
 **With virtual environment activated:**
 
-```powershell
+``` powershell
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
 **Or install packages individually:**
 
-```powershell
+``` powershell
 pip install opentelemetry-api
 pip install opentelemetry-sdk
 pip install opentelemetry-exporter-otlp-proto-http
@@ -122,7 +117,8 @@ pip install scikit-learn
 ```
 
 **Verify installation:**
-```powershell
+
+``` powershell
 pip list
 ```
 
@@ -132,21 +128,20 @@ You should see the OpenTelemetry packages listed.
 
 ### Option 1: Run in Positron (Interactive)
 
-1. **Open Positron**
-2. **Open the project folder**
-3. **Select Python interpreter** from your `venv`
-4. **Open Console** (bottom panel)
-5. **IMPORTANT: Click the restart button (🔄) in the Console** to start fresh
-6. **Run the script:**
-   - Open `main.py` or `ml-observability-demo.py`
-   - Press `Ctrl+Enter` to run, or use the Run button
+1.  **Open Positron**
+2.  **Open the project folder**
+3.  **Select Python interpreter** from your `venv`
+4.  **Open Console** (bottom panel)
+5.  **IMPORTANT: Click the restart button (🔄) in the Console** to start fresh
+6.  **Run the script:**
+    -   Open `main.py` or `ml-observability-demo.py`
+    -   Press `Ctrl+Enter` to run, or use the Run button
 
-**Between runs:**
-- Always **restart the Python console** (🔄 button) to avoid "TracerProvider already exists" errors
+**Between runs:** - Always **restart the Python console** (🔄 button) to avoid "TracerProvider already exists" errors
 
 ### Option 2: Run from Terminal/PowerShell
 
-```powershell
+``` powershell
 # Activate virtual environment first
 .\venv\Scripts\Activate.ps1
 
@@ -159,63 +154,60 @@ python ml-observability-demo.py
 
 ## Viewing Traces in Jaeger
 
-1. **Open Jaeger UI:** http://localhost:16686
-2. **Select Service:**
-   - For `main.py`: select **"positron-demo"**
-   - For `ml-observability-demo.py`: select **"ml-observability-demo"**
-3. **Click "Find Traces"** button
-4. **Click on a trace** to see the detailed timeline
-5. **Explore:**
-   - Span durations
-   - Attributes (metadata)
-   - Parent-child relationships
+1.  **Open Jaeger UI:** http://localhost:16686
+2.  **Select Service:**
+    -   For `main.py`: select **"positron-demo"**
+    -   For `ml-observability-demo.py`: select **"ml-observability-demo"**
+3.  **Click "Find Traces"** button
+4.  **Click on a trace** to see the detailed timeline
+5.  **Explore:**
+    -   Span durations
+    -   Attributes (metadata)
+    -   Parent-child relationships
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Issue: No traces appear in Jaeger
 
 **Solution 1: Verify Jaeger is running**
-```powershell
+
+``` powershell
 docker ps
 ```
+
 You should see `jaegertracing/all-in-one` in the list.
 
 **Solution 2: Test Jaeger connectivity**
-```powershell
+
+``` powershell
 curl http://localhost:16686
 ```
+
 Should return HTML from Jaeger UI.
 
-**Solution 3: Check console output**
-- The scripts print span details to console
-- If you see span output but no Jaeger traces, there's a network issue
-- Try restarting Docker Desktop
+**Solution 3: Check console output** - The scripts print span details to console - If you see span output but no Jaeger traces, there's a network issue - Try restarting Docker Desktop
 
 ### Issue: "TracerProvider already exists" error in Positron
 
-**Solution:** Restart the Python console in Positron:
-1. Find the Console panel (bottom of screen)
-2. Click the restart icon (🔄)
-3. Run your script again
+**Solution:** Restart the Python console in Positron: 1. Find the Console panel (bottom of screen) 2. Click the restart icon (🔄) 3. Run your script again
 
 ### Issue: PowerShell execution policy error
 
 **Solution:**
-```powershell
+
+``` powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
 ### Issue: Docker not found
 
-**Solution:**
-1. Verify Docker Desktop is installed and running
-2. Check system tray for Docker whale icon
-3. Try restarting Docker Desktop
+**Solution:** 1. Verify Docker Desktop is installed and running 2. Check system tray for Docker whale icon 3. Try restarting Docker Desktop
 
 ### Issue: Port already in use
 
 **Solution:**
-```powershell
+
+``` powershell
 # Find what's using the port
 netstat -ano | findstr :16686
 netstat -ano | findstr :4318
@@ -227,45 +219,45 @@ netstat -ano | findstr :4318
 
 ### Key Components
 
-1. **Resource** - Identifies your service
-   ```python
-   resource = Resource.create({
-       "service.name": "ml-observability-demo",
-       "service.namespace": "academic-observability",
-       "service.version": "1.0.0"
-   })
-   ```
+1.  **Resource** - Identifies your service
 
-2. **TracerProvider** - Manages trace collection
-   ```python
-   provider = TracerProvider(resource=resource)
-   ```
+    ``` python
+    resource = Resource.create({
+        "service.name": "ml-observability-demo",
+        "service.namespace": "academic-observability",
+        "service.version": "1.0.0"
+    })
+    ```
 
-3. **Exporters** - Send traces to Jaeger
-   ```python
-   exporter = OTLPSpanExporter(endpoint="http://localhost:4318/v1/traces")
-   ```
+2.  **TracerProvider** - Manages trace collection
 
-4. **Spans** - Represent operations
-   ```python
-   with tracer.start_as_current_span("operation_name") as span:
-       span.set_attribute("key", "value")
-       # Your code here
-   ```
+    ``` python
+    provider = TracerProvider(resource=resource)
+    ```
 
-5. **Flush** - Ensure traces are sent
-   ```python
-   processor.force_flush(timeout_millis=10000)
-   ```
+3.  **Exporters** - Send traces to Jaeger
+
+    ``` python
+    exporter = OTLPSpanExporter(endpoint="http://localhost:4318/v1/traces")
+    ```
+
+4.  **Spans** - Represent operations
+
+    ``` python
+    with tracer.start_as_current_span("operation_name") as span:
+        span.set_attribute("key", "value")
+        # Your code here
+    ```
+
+5.  **Flush** - Ensure traces are sent
+
+    ``` python
+    processor.force_flush(timeout_millis=10000)
+    ```
 
 ### ML Pipeline Instrumentation
 
-The `ml-observability-demo.py` instruments 5 stages:
-1. **Data Loading** - Track dataset size and load time
-2. **Preprocessing** - Record train/test split ratios
-3. **Training** - Capture model type and training duration
-4. **Evaluation** - Store performance metrics (MSE, RMSE)
-5. **Export** - Log result output timing
+The `ml-observability-demo.py` instruments 5 stages: 1. **Data Loading** - Track dataset size and load time 2. **Preprocessing** - Record train/test split ratios 3. **Training** - Capture model type and training duration 4. **Evaluation** - Store performance metrics (MSE, RMSE) 5. **Export** - Log result output timing
 
 Each stage creates a span with relevant attributes for full pipeline observability.
 
@@ -273,45 +265,35 @@ Each stage creates a span with relevant attributes for full pipeline observabili
 
 ### Key Points to Emphasize:
 
-1. **Reproducibility Crisis**: Traditional print statements aren't enough
-2. **Distributed Tracing**: See your entire pipeline in one view
-3. **Performance Insights**: Identify bottlenecks immediately
-4. **Debugging**: Trace failures across pipeline stages
-5. **Standards-Based**: OpenTelemetry is vendor-neutral
-6. **Easy Integration**: Add 20 lines of code to any Python script
-
-### Live Demo Flow:
-
-1. Show Jaeger UI (empty state)
-2. Run `ml-observability-demo.py`
-3. Refresh Jaeger → see traces appear
-4. Click on a trace → show timeline
-5. Highlight span attributes (MSE, timing, etc.)
-6. Show how you can track experiments over time
+1.  **Reproducibility Crisis**: Traditional print statements aren't enough
+2.  **Distributed Tracing**: See your entire pipeline in one view
+3.  **Performance Insights**: Identify bottlenecks immediately
+4.  **Debugging**: Trace failures across pipeline stages
+5.  **Standards-Based**: OpenTelemetry is vendor-neutral
+6.  **Easy Integration**: Add 20 lines of code to any Python script
 
 ## 📚 Additional Resources
 
-- **OpenTelemetry Python Docs**: https://opentelemetry.io/docs/languages/python/
-- **Jaeger Documentation**: https://www.jaegertracing.io/docs/
-- **OTLP Specification**: https://opentelemetry.io/docs/specs/otlp/
+-   **OpenTelemetry Python Docs**: https://opentelemetry.io/docs/languages/python/
+-   **Jaeger Documentation**: https://www.jaegertracing.io/docs/
+-   **OTLP Specification**: https://opentelemetry.io/docs/specs/otlp/
 
-## 🤝 Contributing
+## Contributing
 
-This is a demo repository for educational purposes. Feel free to:
-- Fork and modify for your own talks
-- Add additional ML pipeline examples
-- Integrate with your research workflows
+This is a demo repository for educational purposes.
 
-## 📄 License
+Feel free to: - Fork and modify for your own talks - Add additional ML pipeline examples - Integrate with your research workflows
+
+## License
 
 MIT License - Free to use for academic and research purposes.
 
 ## Contact
 
-For questions about implementing observability in your research:
-- Open an issue on GitHub
-- Email: [jmmcclu3@ncsu.edu]
+For questions about implementing observability in your research: - Open an issue on GitHub - Email: \[jmmcclu3\@ncsu.edu\]
 
----
+------------------------------------------------------------------------
 
-**Remember:** Good observability practices lead to more reproducible, debuggable, and collaborative AI/ML research! 
+**Remember:** Good observability practices lead to more reproducible, debuggable, and collaborative AI/ML research!
+
+This material is based upon work supported by the National Science Foundation under Grant #DGE-2222148. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
